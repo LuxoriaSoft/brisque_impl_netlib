@@ -1,0 +1,48 @@
+name: Build and Publish NuGet
+
+on:
+  push:
+    branches:
+      - main # Trigger the workflow when pushing to the 'main' branch
+  pull_request:
+    branches:
+      - main # Trigger for PRs targeting 'main'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0 # Specify the required .NET SDK version
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build the solution
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Pack NuGet package
+      run: dotnet pack --configuration Release --no-build --output ./artifacts
+
+  publish:
+    needs: build
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0
+
+#    - name: Publish NuGet package
+#      run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

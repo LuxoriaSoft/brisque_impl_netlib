@@ -1,49 +1,53 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 
-namespace Luxoria.Algorithm.BrisqueScore;
-
-public static class BrisqueInterop
+namespace Luxoria.Algorithm.BrisqueScore
 {
-    static BrisqueInterop()
+    public static class BrisqueInterop
     {
-        // Dynamically resolve the correct native library path based on the architecture.
-        string architecture = RuntimeInformation.ProcessArchitecture switch
+        private const string NativeLibraryName = "brisque_quality.dll";
+
+        static BrisqueInterop()
         {
-            Architecture.X86 => "x86",
-            Architecture.X64 => "x64",
-            Architecture.Arm64 => "arm64",
-            _ => throw new NotSupportedException("Unsupported architecture, checkout at https://github.com/LuxoriaSoft/brisque_impl_netlib")
-        };
+            LoadNativeLibrary();
+        }
 
-        string nativePath = Path.Combine(AppContext.BaseDirectory, "lib", architecture, "BRISQUE.dll");
-
-        if (!File.Exists(nativePath))
-            throw new FileNotFoundException($"Native BRISQUE library not found: {nativePath}");
-
-        // Load the native library dynamically
-        NativeLibrary.SetDllImportResolver(typeof(BrisqueInterop).Assembly, (libraryName, assembly, searchPath) =>
+        private static void LoadNativeLibrary()
         {
-            if (libraryName == "BRISQUE.dll")
-                return NativeLibrary.Load(nativePath);
+            string architecture = RuntimeInformation.ProcessArchitecture switch
+            {
+                Architecture.X86 => "x86",
+                Architecture.X64 => "x64",
+                Architecture.Arm64 => "arm64",
+                _ => throw new NotSupportedException("Unsupported architecture")
+            };
 
-            return IntPtr.Zero;
-        });
-    }
+            string nativeLibraryPath = Path.Combine(AppContext.BaseDirectory, "NativeLibraries", architecture, NativeLibraryName);
 
-    // Import the native method using P/Invoke
-    [DllImport("BRISQUE.dll", CallingConvention = CallingConvention.Cdecl)]
-    private static extern double ComputeBrisqueScore(string imagePath);
+            if (!File.Exists(nativeLibraryPath))
+            {
+                throw new FileNotFoundException($"The required native library was not found: {nativeLibraryPath}");
+            }
 
-    /// <summary>
-    /// Calculates the BRISQUE score for a given image file.
-    /// </summary>
-    /// <param name="imagePath">The full path to the image file.</param>
-    /// <returns>The BRISQUE score.</returns>
-    public static double CalculateScore(string imagePath)
-    {
-        if (string.IsNullOrEmpty(imagePath) || !File.Exists(imagePath))
-            throw new FileNotFoundException("Image file not found.", imagePath);
+            // Dynamically load the native library
+            NativeLibrary.SetDllImportResolver(typeof(BrisqueInterop).Assembly, (libraryName, assembly, searchPath) =>
+            {
+                if (libraryName == NativeLibraryName)
+                {
+                    return NativeLibrary.Load(nativeLibraryPath);
+                }
+                return IntPtr.Zero;
+            });
+        }
 
-        return ComputeBrisqueScore(imagePath);
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern double ComputeBrisqueScore(string imagePath);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr CreateBrisqueAlgorithm(string modelPath, string rangePath);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ReleaseBrisqueAlgorithm(IntPtr instance);
     }
 }

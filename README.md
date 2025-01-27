@@ -14,6 +14,9 @@ This NuGet package provides a .NET wrapper for the **BRISQUE (Blind/Referenceles
 - **.NET Version**: `net8.0` or compatible.
 - **Native Dependencies**: OpenCV libraries are embedded within the native implementation.
 
+## Source Code
+The precompiled native libraries are built from the source code available at [LuxoriaSoft/brisque_impl](https://github.com/LuxoriaSoft/brisque_impl)
+
 ## Installation
 You can install the package via NuGet Package Manager or the `.NET CLI`:
 

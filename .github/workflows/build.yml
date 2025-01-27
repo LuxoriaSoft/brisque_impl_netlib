@@ -36,6 +36,12 @@ jobs:
     - name: Pack NuGet package
       working-directory: ./Luxoria.Algorithm.BrisqueScore
       run: dotnet pack --configuration Release --no-build --output ./artifacts Luxoria.Algorithm.BrisqueScore.sln
+    
+    - name: Upload NuGet package
+      uses: actions/upload-artifact@v3
+      with:
+        name: Luxoria.Algorithm.BrisqueScore
+        path: ./Luxoria.Algorithm.BrisqueScore/artifacts/*.nupkg
 
   publish:
     needs: build

@@ -3,10 +3,10 @@ name: Build and Publish NuGet
 on:
   push:
     branches:
-      - main # Trigger the workflow when pushing to the 'main' branch
+      - main
   pull_request:
     branches:
-      - main # Trigger for PRs targeting 'main'
+      - main
 
 jobs:
   build:
@@ -19,16 +19,23 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0 # Specify the required .NET SDK version
+        dotnet-version: 6.0 # Adjust to your .NET SDK version
 
     - name: Restore dependencies
-      run: dotnet restore
+      working-directory: ./Luxoria.Algorithm.BrisqueScore
+      run: dotnet restore Luxoria.Algorithm.BrisqueScore.sln
 
     - name: Build the solution
-      run: dotnet build --configuration Release --no-restore
+      working-directory: ./Luxoria.Algorithm.BrisqueScore
+      run: dotnet build --configuration Release --no-restore Luxoria.Algorithm.BrisqueScore.sln
+
+    - name: Run tests
+      working-directory: ./Luxoria.Algorithm.BrisqueScore
+      run: dotnet test --no-restore --verbosity normal Luxoria.Algorithm.BrisqueScore.sln
 
     - name: Pack NuGet package
-      run: dotnet pack --configuration Release --no-build --output ./artifacts
+      working-directory: ./Luxoria.Algorithm.BrisqueScore
+      run: dotnet pack --configuration Release --no-build --output ./artifacts Luxoria.Algorithm.BrisqueScore.sln
 
   publish:
     needs: build
@@ -42,7 +49,8 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0
+        dotnet-version: 6.0
 
 #    - name: Publish NuGet package
+#      working-directory: ./Luxoria.Algorithm.BrisqueScore
 #      run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

@@ -32,37 +32,17 @@ jobs:
     - name: Pack NuGet package
       working-directory: ./Luxoria.Algorithm.BrisqueScore
       run: |
-        mkdir -Force ./artifacts
+        mkdir -Force artifacts
         dotnet pack --configuration Release --no-build --output ./artifacts Luxoria.Algorithm.BrisqueScore.sln
-    
+
     - name: Debug artifacts
       working-directory: ./Luxoria.Algorithm.BrisqueScore
-      run: dir ./artifacts /s
+      run: |
+        echo "Contents of artifacts directory:"
+        Get-ChildItem -Recurse ./artifacts
 
     - name: Upload NuGet package
       uses: actions/upload-artifact@v3
       with:
         name: Luxoria.Algorithm.BrisqueScore
-        path: ./Luxoria.Algorithm.BrisqueScore/artifacts/**
-
-  publish:
-    needs: build
-    runs-on: windows-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0
-
-    - name: List artifacts
-      working-directory: ./Luxoria.Algorithm.BrisqueScore
-      run: dir ./artifacts /s
-
-   # - name: Publish NuGet package
-   #   working-directory: ./Luxoria.Algorithm.BrisqueScore
-   #   run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        path: ./Luxoria.Algorithm.BrisqueScore/artifacts/*.nupkg

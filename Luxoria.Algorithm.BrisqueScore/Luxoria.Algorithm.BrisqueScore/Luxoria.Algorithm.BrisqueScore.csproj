@@ -3,35 +3,30 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-	<Nullable>enable</Nullable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyName>Luxoria.Algorithm.BrisqueScore</AssemblyName>
-	<RootNamespace>Luxoria.Algorithm.BrisqueScore</RootNamespace>
-	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  
-	<PackageId>Luxoria.Algorithm.BrisqueScore</PackageId>
-	<Version>1.0.0</Version>
-	<Authors>LuxoriaSoft</Authors>
-	<Description>Library for computing BRISQUE scores using OpenCV and native interop.</Description>
-	<PackageProjectUrl>https://github.com/LuxoriaSoft/brisque_impl_netlib</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/LuxoriaSoft/brisque_impl_netlib</RepositoryUrl>
-	<RepositoryType>git</RepositoryType>
-	<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-	<OutputPath>bin\NuGet</OutputPath>
+    <RootNamespace>Luxoria.Algorithm.BrisqueScore</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+      
+    <PackageId>Luxoria.Algorithm.BrisqueScore</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>LuxoriaSoft</Authors>
+    <Description>Library for computing BRISQUE scores using OpenCV and native interop.</Description>
+    <PackageProjectUrl>https://github.com/LuxoriaSoft/brisque_impl_netlib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/LuxoriaSoft/brisque_impl_netlib</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <OutputPath>bin\NuGet</OutputPath>
   </PropertyGroup>
 
+  <!-- Include native DLLs in the NuGet package -->
   <ItemGroup>
-    <None Update="NativeLibraries\arm64\brisque_quality.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="NativeLibraries\x64\brisque_quality.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="NativeLibraries\x86\brisque_quality.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="NativeLibraries\arm64\brisque_quality.dll" Pack="true" PackagePath="runtimes\win-arm64\native" />
+    <None Include="NativeLibraries\x64\brisque_quality.dll" Pack="true" PackagePath="runtimes\win-x64\native" />
+    <None Include="NativeLibraries\x86\brisque_quality.dll" Pack="true" PackagePath="runtimes\win-x86\native" />
   </ItemGroup>
 
 </Project>

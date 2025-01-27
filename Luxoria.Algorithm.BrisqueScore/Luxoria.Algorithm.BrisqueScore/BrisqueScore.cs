@@ -4,13 +4,26 @@ using System.Runtime.InteropServices;
 
 namespace Luxoria.Algorithm.BrisqueScore
 {
-    public static class BrisqueInterop
+    public class BrisqueInterop : IDisposable
     {
         private const string NativeLibraryName = "brisque_quality.dll";
+        private IntPtr _brisqueInstance;
 
         static BrisqueInterop()
         {
             LoadNativeLibrary();
+        }
+
+        public BrisqueInterop(string modelPath, string rangePath)
+        {
+            if (string.IsNullOrWhiteSpace(modelPath) || !File.Exists(modelPath))
+                throw new FileNotFoundException($"Model file not found: {modelPath}");
+            if (string.IsNullOrWhiteSpace(rangePath) || !File.Exists(rangePath))
+                throw new FileNotFoundException($"Range file not found: {rangePath}");
+
+            _brisqueInstance = CreateBrisqueAlgorithm(modelPath, rangePath);
+            if (_brisqueInstance == IntPtr.Zero)
+                throw new InvalidOperationException("Failed to create BRISQUE algorithm instance.");
         }
 
         private static void LoadNativeLibrary()
@@ -41,13 +54,31 @@ namespace Luxoria.Algorithm.BrisqueScore
             });
         }
 
+        public double ComputeScore(string imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath))
+                throw new FileNotFoundException($"Image file not found: {imagePath}");
+
+            return ComputeBrisqueScore(_brisqueInstance, imagePath);
+        }
+
+        public void Dispose()
+        {
+            if (_brisqueInstance != IntPtr.Zero)
+            {
+                ReleaseBrisqueAlgorithm(_brisqueInstance);
+                _brisqueInstance = IntPtr.Zero;
+            }
+        }
+
+        // Native function declarations
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern double ComputeBrisqueScore(string imagePath);
+        private static extern IntPtr CreateBrisqueAlgorithm(string modelPath, string rangePath);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr CreateBrisqueAlgorithm(string modelPath, string rangePath);
+        private static extern double ComputeBrisqueScore(IntPtr brisqueInstance, string imagePath);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ReleaseBrisqueAlgorithm(IntPtr instance);
+        private static extern void ReleaseBrisqueAlgorithm(IntPtr instance);
     }
 }

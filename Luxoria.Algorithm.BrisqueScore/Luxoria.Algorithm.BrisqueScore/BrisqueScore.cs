@@ -36,7 +36,7 @@ namespace Luxoria.Algorithm.BrisqueScore
                 _ => throw new NotSupportedException("Unsupported architecture")
             };
 
-            string nativeLibraryPath = Path.Combine(AppContext.BaseDirectory, "runtimes", architecture, NativeLibraryName);
+            string nativeLibraryPath = Path.Combine(AppContext.BaseDirectory, "runtimes", architecture, "native", NativeLibraryName);
 
             if (!File.Exists(nativeLibraryPath))
             {

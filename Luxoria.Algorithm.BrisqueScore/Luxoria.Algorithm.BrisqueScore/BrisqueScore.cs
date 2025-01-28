@@ -30,13 +30,13 @@ namespace Luxoria.Algorithm.BrisqueScore
         {
             string architecture = RuntimeInformation.ProcessArchitecture switch
             {
-                Architecture.X86 => "x86",
-                Architecture.X64 => "x64",
-                Architecture.Arm64 => "arm64",
+                Architecture.X86 => "win-x86",
+                Architecture.X64 => "win-x64",
+                Architecture.Arm64 => "win-arm64",
                 _ => throw new NotSupportedException("Unsupported architecture")
             };
 
-            string nativeLibraryPath = Path.Combine(AppContext.BaseDirectory, "NativeLibraries", architecture, NativeLibraryName);
+            string nativeLibraryPath = Path.Combine(AppContext.BaseDirectory, "runtimes", architecture, NativeLibraryName);
 
             if (!File.Exists(nativeLibraryPath))
             {

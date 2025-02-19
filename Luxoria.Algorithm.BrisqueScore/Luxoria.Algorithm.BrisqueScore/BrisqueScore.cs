@@ -3,16 +3,29 @@ using System.Runtime.InteropServices;
 
 namespace Luxoria.Algorithm.BrisqueScore
 {
+    /// <summary>
+    /// Provides an interface for interacting with the native BRISQUE quality assessment algorithm.
+    /// </summary>
     public class BrisqueInterop : IDisposable
     {
         private const string NativeLibraryName = "brisque_quality";
         private IntPtr _brisqueInstance;
 
+        /// <summary>
+        /// Static constructor to load the native library when the class is first accessed.
+        /// </summary>
         static BrisqueInterop()
         {
             ExtractAndLoadNativeLibrary();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BrisqueInterop"/> class.
+        /// </summary>
+        /// <param name="modelPath">Path to the BRISQUE model file.</param>
+        /// <param name="rangePath">Path to the BRISQUE range file.</param>
+        /// <exception cref="FileNotFoundException">Thrown if the model or range file does not exist.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the BRISQUE algorithm instance cannot be created.</exception>
         public BrisqueInterop(string modelPath, string rangePath)
         {
             if (string.IsNullOrWhiteSpace(modelPath) || !File.Exists(modelPath))
@@ -25,6 +38,9 @@ namespace Luxoria.Algorithm.BrisqueScore
                 throw new InvalidOperationException("Failed to create BRISQUE algorithm instance.");
         }
 
+        /// <summary>
+        /// Extracts and loads the native BRISQUE library from embedded resources.
+        /// </summary>
         private static void ExtractAndLoadNativeLibrary()
         {
             string architecture = RuntimeInformation.ProcessArchitecture switch
@@ -42,7 +58,7 @@ namespace Luxoria.Algorithm.BrisqueScore
 
             string dllPath = Path.Combine(tempPath, "brisque_quality.dll");
 
-            // Extract DLL from embedded resources
+            // Extract the DLL from embedded resources
             using (Stream? resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
             {
                 if (resourceStream == null)
@@ -54,10 +70,16 @@ namespace Luxoria.Algorithm.BrisqueScore
                 }
             }
 
-            // Load the native library
+            // Load the extracted native library
             NativeLibrary.Load(dllPath);
         }
 
+        /// <summary>
+        /// Computes the BRISQUE score for a given image.
+        /// </summary>
+        /// <param name="imagePath">Path to the image file.</param>
+        /// <returns>The computed BRISQUE score.</returns>
+        /// <exception cref="FileNotFoundException">Thrown if the image file does not exist.</exception>
         public double ComputeScore(string imagePath)
         {
             if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath))
@@ -66,6 +88,9 @@ namespace Luxoria.Algorithm.BrisqueScore
             return ComputeBrisqueScore(_brisqueInstance, imagePath);
         }
 
+        /// <summary>
+        /// Releases resources used by the BRISQUE algorithm instance.
+        /// </summary>
         public void Dispose()
         {
             if (_brisqueInstance != IntPtr.Zero)

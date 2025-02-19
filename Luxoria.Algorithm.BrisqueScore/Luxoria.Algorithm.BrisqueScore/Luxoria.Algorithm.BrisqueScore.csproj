@@ -12,7 +12,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
       
     <PackageId>Luxoria.Algorithm.BrisqueScore</PackageId>
-    <Version>2.0.0.4100</Version>
+    <Version>3.0.2.4100</Version>
     <Authors>LuxoriaSoft</Authors>
     <Description>Library for computing BRISQUE scores using OpenCV and native interop.</Description>
     <PackageProjectUrl>https://github.com/LuxoriaSoft/brisque_impl_netlib</PackageProjectUrl>
@@ -24,9 +24,8 @@
 
   <!-- Include native DLLs in the NuGet package -->
   <ItemGroup>
-    <None Include="NativeLibraries\arm64\brisque_quality.dll" Pack="true" PackagePath="runtimes\win-arm64\native" />
-    <None Include="NativeLibraries\x64\brisque_quality.dll" Pack="true" PackagePath="runtimes\win-x64\native" />
-    <None Include="NativeLibraries\x86\brisque_quality.dll" Pack="true" PackagePath="runtimes\win-x86\native" />
+	<EmbeddedResource Include="NativeLibraries\arm64\brisque_quality.dll" LogicalName="Luxoria.Algorithm.BrisqueScore.NativeLibraries.arm64.brisque_quality.dll" />
+	<EmbeddedResource Include="NativeLibraries\x64\brisque_quality.dll" LogicalName="Luxoria.Algorithm.BrisqueScore.NativeLibraries.x64.brisque_quality.dll" />
+	<EmbeddedResource Include="NativeLibraries\x86\brisque_quality.dll" LogicalName="Luxoria.Algorithm.BrisqueScore.NativeLibraries.x86.brisque_quality.dll" />
   </ItemGroup>
-
 </Project>

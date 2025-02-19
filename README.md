@@ -26,7 +26,7 @@ Search for `Luxoria.Algorithm.BrisqueScore` in the NuGet Package Manager and ins
 ### Using .NET CLI
 Run the following command:
 ```bash
-dotnet add package Luxoria.Algorithm.BrisqueScore --version 2.0.0.4100
+dotnet add package Luxoria.Algorithm.BrisqueScore --version 3.0.2.4100
 ```
 
 ### Usage

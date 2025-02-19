@@ -1,17 +1,16 @@
-﻿using System;
-using System.IO;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Luxoria.Algorithm.BrisqueScore
 {
     public class BrisqueInterop : IDisposable
     {
-        private const string NativeLibraryName = "brisque_quality.dll";
+        private const string NativeLibraryName = "brisque_quality";
         private IntPtr _brisqueInstance;
 
         static BrisqueInterop()
         {
-            LoadNativeLibrary();
+            ExtractAndLoadNativeLibrary();
         }
 
         public BrisqueInterop(string modelPath, string rangePath)
@@ -26,32 +25,37 @@ namespace Luxoria.Algorithm.BrisqueScore
                 throw new InvalidOperationException("Failed to create BRISQUE algorithm instance.");
         }
 
-        private static void LoadNativeLibrary()
+        private static void ExtractAndLoadNativeLibrary()
         {
             string architecture = RuntimeInformation.ProcessArchitecture switch
             {
-                Architecture.X86 => "win-x86",
-                Architecture.X64 => "win-x64",
-                Architecture.Arm64 => "win-arm64",
+                Architecture.X86 => "x86",
+                Architecture.X64 => "x64",
+                Architecture.Arm64 => "arm64",
                 _ => throw new NotSupportedException("Unsupported architecture")
             };
 
-            string nativeLibraryPath = Path.Combine(AppContext.BaseDirectory, "runtimes", architecture, "native", NativeLibraryName);
+            string resourceName = $"Luxoria.Algorithm.BrisqueScore.NativeLibraries.{architecture}.brisque_quality.dll";
 
-            if (!File.Exists(nativeLibraryPath))
+            string tempPath = Path.Combine(Path.GetTempPath(), "LuxoriaNative");
+            Directory.CreateDirectory(tempPath);
+
+            string dllPath = Path.Combine(tempPath, "brisque_quality.dll");
+
+            // Extract DLL from embedded resources
+            using (Stream? resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
             {
-                throw new FileNotFoundException($"The required native library was not found: {nativeLibraryPath}");
+                if (resourceStream == null)
+                    throw new FileNotFoundException($"Embedded resource not found: {resourceName}");
+
+                using (FileStream fileStream = new FileStream(dllPath, FileMode.Create, FileAccess.Write))
+                {
+                    resourceStream.CopyTo(fileStream);
+                }
             }
 
-            // Dynamically load the native library
-            NativeLibrary.SetDllImportResolver(typeof(BrisqueInterop).Assembly, (libraryName, assembly, searchPath) =>
-            {
-                if (libraryName == NativeLibraryName)
-                {
-                    return NativeLibrary.Load(nativeLibraryPath);
-                }
-                return IntPtr.Zero;
-            });
+            // Load the native library
+            NativeLibrary.Load(dllPath);
         }
 
         public double ComputeScore(string imagePath)

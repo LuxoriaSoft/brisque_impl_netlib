@@ -12,7 +12,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
       
     <PackageId>Luxoria.Algorithm.BrisqueScore</PackageId>
-    <Version>3.0.2.4100</Version>
+    <Version>3.0.3.4100</Version>
     <Authors>LuxoriaSoft</Authors>
     <Description>Library for computing BRISQUE scores using OpenCV and native interop.</Description>
     <PackageProjectUrl>https://github.com/LuxoriaSoft/brisque_impl_netlib</PackageProjectUrl>
@@ -20,6 +20,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <OutputPath>bin\NuGet</OutputPath>
+    <PackageIcon>logo128x128.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <!-- Include native DLLs in the NuGet package -->
@@ -27,5 +29,15 @@
 	<EmbeddedResource Include="NativeLibraries\arm64\brisque_quality.dll" LogicalName="Luxoria.Algorithm.BrisqueScore.NativeLibraries.arm64.brisque_quality.dll" />
 	<EmbeddedResource Include="NativeLibraries\x64\brisque_quality.dll" LogicalName="Luxoria.Algorithm.BrisqueScore.NativeLibraries.x64.brisque_quality.dll" />
 	<EmbeddedResource Include="NativeLibraries\x86\brisque_quality.dll" LogicalName="Luxoria.Algorithm.BrisqueScore.NativeLibraries.x86.brisque_quality.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\logo128x128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>

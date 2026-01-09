@@ -1,0 +1,65 @@
+name: Test and Coverage
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+          10.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln
+      
+    - name: Build
+      run: dotnet build Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln --configuration Release --no-restore
+      
+    - name: Run tests with coverage
+      run: dotnet test Luxoria.Algorithm.BrisqueScore/BrisqueScore.Tests/BrisqueScore.Tests.csproj --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+      
+    - name: Generate coverage report
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.3.10
+      with:
+        reports: 'coverage/**/coverage.cobertura.xml'
+        targetdir: 'coveragereport'
+        reporttypes: 'HtmlInline;Cobertura;MarkdownSummaryGithub'
+        
+    - name: Upload coverage report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coveragereport
+        
+    - name: Add Coverage PR Comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: coveragereport/SummaryGithub.md
+        
+    - name: Write to Job Summary
+      run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+      shell: bash
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./coverage/**/coverage.cobertura.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}

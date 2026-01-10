@@ -68,8 +68,7 @@ namespace BrisqueScore.Tests
             string resourceName = $"Luxoria.Algorithm.BrisqueScore.NativeLibraries.{archFolder}.brisque_quality.dll";
 
             var resourceNames = assembly.GetManifestResourceNames();
-            
-            // Document what resources are available (may not be embedded in test context)
+
             Assert.NotNull(resourceNames);
         }
 

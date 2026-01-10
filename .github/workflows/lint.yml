@@ -1,0 +1,27 @@
+name: Lint
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln
+
+    - name: Enforce formatting
+      run: dotnet format Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln --verify-no-changes --no-restore --verbosity minimal

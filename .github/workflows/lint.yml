@@ -20,8 +20,18 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    - name: Prepare format artifacts directory
+      run: mkdir -Force format-artifacts
+
     - name: Restore dependencies
       run: dotnet restore Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln
 
     - name: Enforce formatting
-      run: dotnet format Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln --verify-no-changes --no-restore --verbosity minimal
+      run: dotnet format Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln --verify-no-changes --no-restore --report format-artifacts/format-report.json --verbosity minimal
+
+    - name: Upload format report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: format-report
+        path: format-artifacts/format-report.json

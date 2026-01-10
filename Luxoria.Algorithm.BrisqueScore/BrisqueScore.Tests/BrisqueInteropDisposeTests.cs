@@ -175,7 +175,7 @@ namespace BrisqueScore.Tests
         {
             // Test that dispose is called even when exception occurs in the using block
             var exceptionCaught = false;
-            
+
             try
             {
                 // Since the constructor itself throws, we can't test inside the using block
@@ -184,14 +184,14 @@ namespace BrisqueScore.Tests
                 {
                     using var interop = new BrisqueInterop(_validModelPath, _validRangePath);
                 });
-                
+
                 exceptionCaught = true;
             }
             catch
             {
                 exceptionCaught = true;
             }
-            
+
             Assert.True(exceptionCaught);
         }
 

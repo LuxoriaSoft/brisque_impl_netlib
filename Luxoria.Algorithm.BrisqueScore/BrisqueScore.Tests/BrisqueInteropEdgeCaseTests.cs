@@ -339,7 +339,7 @@ namespace BrisqueScore.Tests
         {
             // Null character gets truncated by File.Exists, causing FileNotFoundException instead
             var pathWithNull = _validModelPath + "\0extra";
-            
+
             Assert.ThrowsAny<Exception>(() =>
             {
                 using var interop = new BrisqueInterop(pathWithNull, _validRangePath);

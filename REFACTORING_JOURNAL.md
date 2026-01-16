@@ -43,7 +43,7 @@ Create a NuGet package for seamless integration into **Luxoria**, our C# WinUI d
 - **Zero-configuration deployment**: Single `dotnet add package` command
 - **Native performance preserved**: P/Invoke wrapper around optimized C++ code
 - **Multi-architecture support**: x86, x64, and ARM64 Windows
-- **Minimal footprint**: ~113 lines of C# wrapper code
+- **Minimal footprint**: Strict as possible, one goal, one task to perform
 
 ### Trade-off Summary
 
@@ -101,6 +101,7 @@ brisquecsharp/
 │   │   └── arm64/brisque_quality.dll     # 3.9 MB
 │   └── Luxoria.Algorithm.BrisqueScore.csproj
 └── BrisqueScore.TestMain/                 # Reference application
+└── BrisqueScore.Tests/                    # Testing enforcement policy (testing codebase)
 ```
 
 ---
@@ -121,7 +122,7 @@ brisquecsharp/
 ┌─────────────────────────────────────────────────────────────┐
 │              BrisqueAlgorithm (Facade)                      │
 │  namespace: luxoria::filter::algorithms                     │
-│  - cv::Ptr<cv::quality::QualityBRISQUE> _model             │
+│  - cv::Ptr<cv::quality::QualityBRISQUE> _model              │
 │  - compute(cv::Mat) -> double                               │
 └─────────────────────────┬───────────────────────────────────┘
                           │
@@ -144,7 +145,7 @@ brisquecsharp/
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
 │              BrisqueInterop : IDisposable                   │
-│  - Static constructor: ExtractAndLoadNativeLibrary()       │
+│  - Static constructor: ExtractAndLoadNativeLibrary()        │
 │  - Architecture detection (x86/x64/arm64)                   │
 │  - Resource extraction to temp directory                    │
 │  - Validation layer (file existence checks)                 │
@@ -348,19 +349,19 @@ public class BrisqueInterop : IDisposable {
 ```
 ┌───────────────────────────────────────────────────┐
 │              Managed Heap (.NET)                  │
-│  ┌───────────────────────────────────────────┐   │
-│  │  BrisqueInterop instance                  │   │
-│  │  - _brisqueInstance: IntPtr (8 bytes)    │   │
-│  └──────────────────┬────────────────────────┘   │
+│  ┌───────────────────────────────────────────┐    │
+│  │  BrisqueInterop instance                  │    │
+│  │  - _brisqueInstance: IntPtr (8 bytes)     │    │
+│  └──────────────────┬────────────────────────┘    │
 └─────────────────────┼─────────────────────────────┘
                       │ Points to
                       ▼
 ┌───────────────────────────────────────────────────┐
 │              Native Heap (C++)                    │
-│  ┌───────────────────────────────────────────┐   │
-│  │  BrisqueAlgorithm instance                │   │
-│  │  └─> QualityBRISQUE (SVM model ~555KB)   │   │
-│  └───────────────────────────────────────────┘   │
+│  ┌───────────────────────────────────────────┐    │
+│  │  BrisqueAlgorithm instance                │    │
+│  │  └─> QualityBRISQUE (SVM model ~555KB)    │    │
+│  └───────────────────────────────────────────┘    │
 └───────────────────────────────────────────────────┘
 ```
 
@@ -672,8 +673,6 @@ target_link_libraries(brisque_quality ${OpenCV_LIBS})
 
 | Item | Priority | Description |
 |------|----------|-------------|
-| Unit test suite | Medium | Add xUnit tests for validation logic, dispose pattern, architecture detection |
-| Finalizer safety net | Low | Add ~BrisqueInterop() as backup for forgotten Dispose() |
 | Async API | Low | Add ComputeScoreAsync for UI responsiveness |
 | Batch processing | Low | Process multiple images efficiently |
 
@@ -703,20 +702,20 @@ The refactoring successfully transformed a C++ CLI tool into a polished .NET lib
                              ▼
 ┌────────────────────────────────────────────────────────────────┐
 │           Luxoria.Algorithm.BrisqueScore (NuGet)               │
-│  ┌──────────────────────────────────────────────────────────┐ │
-│  │  BrisqueInterop.cs                                       │ │
-│  │  - Input validation                                      │ │
-│  │  - Architecture detection                                │ │
-│  │  - Resource extraction                                   │ │
-│  │  - P/Invoke wrapper                                      │ │
-│  │  - IDisposable pattern                                   │ │
-│  └──────────────────────────────────────────────────────────┘ │
-│  ┌──────────────────────────────────────────────────────────┐ │
-│  │  Embedded Native Libraries                               │ │
-│  │  - x86/brisque_quality.dll (4.2 MB)                     │ │
-│  │  - x64/brisque_quality.dll (5.6 MB)                     │ │
-│  │  - arm64/brisque_quality.dll (3.9 MB)                   │ │
-│  └──────────────────────────────────────────────────────────┘ │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  BrisqueInterop.cs                                       │  │
+│  │  - Input validation                                      │  │
+│  │  - Architecture detection                                │  │
+│  │  - Resource extraction                                   │  │
+│  │  - P/Invoke wrapper                                      │  │
+│  │  - IDisposable pattern                                   │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  Embedded Native Libraries                               │  │
+│  │  - x86/brisque_quality.dll (4.2 MB)                      │  │
+│  │  - x64/brisque_quality.dll (5.6 MB)                      │  │
+│  │  - arm64/brisque_quality.dll (3.9 MB)                    │  │
+│  └──────────────────────────────────────────────────────────┘  │
 └────────────────────────────────────────────────────────────────┘
 ```
 

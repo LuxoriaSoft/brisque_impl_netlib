@@ -3,6 +3,10 @@
 This NuGet package provides a .NET wrapper for the **BRISQUE (Blind/Referenceless Image Spatial Quality Evaluator)** algorithm implemented in native C++ with OpenCV. It allows .NET developers to compute the perceptual quality of images using the BRISQUE algorithm without requiring a reference image.
 
 [![codecov](https://codecov.io/gh/LuxoriaSoft/brisque_impl_netlib/branch/main/graph/badge.svg)](https://codecov.io/gh/LuxoriaSoft/brisque_impl_netlib)
+ 
+[Online Documentation](https://dotnet-opencv-brisque.luxoriasoft.bluepelicansoft.com/)
+
+[Check it out on Nuget.org](https://www.nuget.org/packages/Luxoria.Algorithm.BrisqueScore)
 
 ## Features
 - **Easy-to-Use .NET API**: Access BRISQUE functionality directly in .NET applications.

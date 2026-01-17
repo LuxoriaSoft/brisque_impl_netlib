@@ -30,10 +30,10 @@ jobs:
       run: dotnet restore Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln
       
     - name: Build
-      run: dotnet build Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln --configuration Release --no-restore --arch ${{ matrix.architecture }}
+      run: dotnet build Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln --configuration Release --no-restore
       
     - name: Run tests with coverage
-      run: dotnet test Luxoria.Algorithm.BrisqueScore/BrisqueScore.Tests/BrisqueScore.Tests.csproj --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage --arch ${{ matrix.architecture }}
+      run: dotnet test Luxoria.Algorithm.BrisqueScore/BrisqueScore.Tests/BrisqueScore.Tests.csproj --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage --arch ${{ matrix.architecture }}
       
     - name: Generate coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.3.10

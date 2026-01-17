@@ -13,18 +13,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        architecture: [x64, x86, arm64]
+        architecture: [x64, x86]
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup .NET
+    - name: Setup .NET (x64)
+      if: matrix.architecture == 'x64'
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
           8.0.x
           10.0.x
+    
+    - name: Setup .NET (x86)
+      if: matrix.architecture == 'x86'
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+          10.0.x
+        architecture: x86
         
     - name: Restore dependencies
       run: dotnet restore Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln

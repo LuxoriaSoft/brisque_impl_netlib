@@ -10,6 +10,10 @@ on:
 jobs:
   test:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [x64, x86, arm64]
     
     steps:
     - name: Checkout code
@@ -26,10 +30,10 @@ jobs:
       run: dotnet restore Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln
       
     - name: Build
-      run: dotnet build Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln --configuration Release --no-restore
+      run: dotnet build Luxoria.Algorithm.BrisqueScore/Luxoria.Algorithm.BrisqueScore.sln --configuration Release --no-restore --arch ${{ matrix.architecture }}
       
     - name: Run tests with coverage
-      run: dotnet test Luxoria.Algorithm.BrisqueScore/BrisqueScore.Tests/BrisqueScore.Tests.csproj --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: dotnet test Luxoria.Algorithm.BrisqueScore/BrisqueScore.Tests/BrisqueScore.Tests.csproj --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage --arch ${{ matrix.architecture }}
       
     - name: Generate coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.3.10
@@ -41,26 +45,28 @@ jobs:
     - name: Upload coverage report artifact
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
+        name: coverage-report-${{ matrix.architecture }}
         path: coveragereport
         
     - name: Add Coverage PR Comment
       uses: marocchino/sticky-pull-request-comment@v2
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && matrix.architecture == 'x64'
       with:
         recreate: true
         path: coveragereport/SummaryGithub.md
         
     - name: Write to Job Summary
-      run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+      run: |
+        echo "## Coverage Report - Windows - ${{ matrix.architecture }}" >> $GITHUB_STEP_SUMMARY
+        cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
       shell: bash
       
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
         files: ./coverage/**/coverage.cobertura.xml
-        flags: unittests
-        name: codecov-umbrella
+        flags: unittests-${{ matrix.architecture }}
+        name: codecov-windows-${{ matrix.architecture }}
         fail_ci_if_error: false
         token: ${{ secrets.CODECOV_TOKEN }}
 

@@ -10,9 +10,17 @@
 | **Architecture** | Native Interop via P/Invoke |
 | **License** | Apache 2.0 |
 
+
+## General Information about OpenCV Configuration and Brisque Quality Assessment
+
 For more details about OpenCV configuration (which includes OpenCV Core + OpenCV Contrib Modules with quality feature, check it out at : https://github.com/LuxoriaSoft/brisque_impl/blob/35fee77d24e5c9388c40e02639778e9e85fc2709/.github/workflows/build.yml#L27)
 
 The inclusion of "contrib" is needed for bringing "quality" in, quality module sets between core and contrib modules.
+
+For more details related to Brisque, check these links out : 
+- https://learnopencv.com/image-quality-assessment-brisque/. 
+- https://docs.opencv.org/4.x/d8/d99/classcv_1_1quality_1_1QualityBRISQUE.html
+
 
 ---
 

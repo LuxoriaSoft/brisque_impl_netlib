@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Project** | Luxoria BRISQUE Implementation |
-| **Original Language** | C++ (OpenCV 4.10.0) |
+| **Original Language** | C++ (OpenCV 4.10.0) with contrib modules |
 | **Target Language** | C# (.NET 8.0) |
 | **Architecture** | Native Interop via P/Invoke |
 | **License** | Apache 2.0 |

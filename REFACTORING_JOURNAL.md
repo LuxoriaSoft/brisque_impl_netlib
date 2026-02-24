@@ -424,6 +424,10 @@ private static void ExtractAndLoadNativeLibrary() {
 }
 ```
 
+This wrapper automatically selects and loads the correct native DLL (`x86`, `x64`, or `arm64`) based on the current process architecture.
+
+In the original version, this selection was manual, meaning that callers had to choose which executable to run for each architecture, which partially negated the simplification goal because additional operations were required and not forgetting not-supported architecture.
+
 ---
 
 ## 8. Distribution Strategy

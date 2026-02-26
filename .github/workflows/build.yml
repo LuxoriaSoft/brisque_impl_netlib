@@ -14,35 +14,21 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0
-
-    - name: Restore dependencies
-      working-directory: ./Luxoria.Algorithm.BrisqueScore
-      run: dotnet restore Luxoria.Algorithm.BrisqueScore.sln
-
-    - name: Build the solution
-      working-directory: ./Luxoria.Algorithm.BrisqueScore
-      run: dotnet build --configuration Release --no-restore Luxoria.Algorithm.BrisqueScore.sln
 
     - name: Pack NuGet package
       working-directory: ./Luxoria.Algorithm.BrisqueScore
       run: |
         mkdir -Force artifacts
-        dotnet pack --configuration Release --no-build --output ./artifacts Luxoria.Algorithm.BrisqueScore.sln
-
-    - name: Debug artifacts
-      working-directory: ./Luxoria.Algorithm.BrisqueScore
-      run: |
-        echo "Contents of artifacts directory:"
-        Get-ChildItem -Recurse ./artifacts
+        dotnet pack .\Luxoria.Algorithm.BrisqueScore\Luxoria.Algorithm.BrisqueScore.csproj --configuration Release --output .\artifacts
 
     - name: Upload NuGet package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Luxoria.Algorithm.BrisqueScore
         path: ./Luxoria.Algorithm.BrisqueScore/artifacts/*.nupkg

@@ -25,7 +25,8 @@ jobs:
       working-directory: ./Luxoria.Algorithm.BrisqueScore
       run: |
         mkdir -Force artifacts
-        dotnet pack .\Luxoria.Algorithm.BrisqueScore\Luxoria.Algorithm.BrisqueScore.csproj --configuration Release --output .\artifacts
+        dotnet build .\Luxoria.Algorithm.BrisqueScore\Luxoria.Algorithm.BrisqueScore.csproj --configuration Release
+        dotnet pack .\Luxoria.Algorithm.BrisqueScore\Luxoria.Algorithm.BrisqueScore.csproj --configuration Release --no-build --output .\artifacts
 
     - name: Upload NuGet package
       uses: actions/upload-artifact@v4
